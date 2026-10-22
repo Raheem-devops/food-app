@@ -1,0 +1,40 @@
+name: CI-CD
+on:
+  push:
+    branches: [main]
+
+jobs:
+  build-and-deploy:
+    runs-on: self-hosted
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Install and test
+        run: |
+          npm ci
+          npm test
+
+      - name: Build and push image
+        run: |
+          echo "${{ secrets.DOCKERHUB_TOKEN }}" | docker login -u "${{ secrets.DOCKERHUB_USERNAME }}" --password-stdin
+          docker build -t ${{ secrets.DOCKERHUB_USERNAME }}/food-app:${{ github.sha }} .
+          docker push ${{ secrets.DOCKERHUB_USERNAME }}/food-app:${{ github.sha }}
+
+      - name: Deploy to Kubernetes
+        run: |
+          kubectl set image deployment/food-app food-app=${{ secrets.DOCKERHUB_USERNAME }}/food-app:${{ github.sha }}
+          kubectl rollout status deployment/food-app --timeout=120s
+
+      - name: Notify success
+        if: success()
+        run: |
+          curl -X POST -H 'Content-type: application/json' \
+          --data '{"text":"Deployment successful: food-app ${{ github.sha }}"}' \
+          ${{ secrets.SLACK_WEBHOOK_URL }}
+
+      - name: Notify failure
+        if: failure()
+        run: |
+          curl -X POST -H 'Content-type: application/json' \
+          --data '{"text":"Deployment FAILED for commit ${{ github.sha }}"}' \
+          ${{ secrets.SLACK_WEBHOOK_URL }}

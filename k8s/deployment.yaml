@@ -1,0 +1,31 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: food-app
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: food-app
+  template:
+    metadata:
+      labels:
+        app: food-app
+    spec:
+      containers:
+        - name: food-app
+          image: raheemdevops/food-app:1.0.0
+          ports:
+            - containerPort: 3000
+          resources:
+            requests:
+              cpu: 100m
+              memory: 128Mi
+            limits:
+              cpu: 300m
+              memory: 256Mi
+          readinessProbe:
+            httpGet:
+              path: /health
+              port: 3000
+            initialDelaySeconds: 3

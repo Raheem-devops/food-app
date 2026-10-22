@@ -19,7 +19,7 @@ app.use((req, res, next) => {
   next();
 });
 
-const VERSION = '1.0.0';
+const VERSION = '2.0.0';
 
 app.get('/health', (req, res) => res.send('OK'));
 app.get('/version', (req, res) => res.json({ version: VERSION }));

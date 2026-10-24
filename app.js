@@ -2,6 +2,7 @@ const express = require('express');
 const client = require('prom-client');
 
 const app = express();
+app.use(express.static('public'));
 client.collectDefaultMetrics();
 
 const httpDuration = new client.Histogram({

@@ -1,0 +1,22 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+  <meta name="theme-color" content="#f97316"><title>QuickBasket | Food delivered fast</title>
+  <link rel="stylesheet" href="/styles.css">
+</head>
+<body>
+<header class="topbar"><a class="brand" href="/">🥡 QuickBasket</a><div class="top-actions"><button id="trackOpen" class="ghost">Track order</button><button id="cartOpen" class="cart-button">Cart <span id="cartCount">0</span></button></div></header>
+<section class="hero"><div><p class="eyebrow">GOOD FOOD. GOOD MOOD.</p><h1>Your cravings,<br><span>delivered.</span></h1><p>Discover local favourites and get them at your doorstep.</p><a href="#restaurants" class="primary-link">Explore restaurants ↓</a></div><div class="hero-art">🍕<span>🥗</span><b>🍜</b></div></section>
+<main>
+<section id="restaurants"><div class="section-head"><div><p class="eyebrow">HANDPICKED FOR YOU</p><h2>Popular restaurants</h2></div><span class="muted">Fresh picks, every day</span></div><div id="restaurantGrid" class="restaurant-grid"><p>Loading restaurants…</p></div></section>
+<section id="menuSection" class="hidden"><div class="section-head"><div><p class="eyebrow">MADE WITH LOVE</p><h2 id="menuTitle">Menu</h2></div><button id="backRestaurants" class="ghost">← Restaurants</button></div><div id="menuGrid" class="menu-grid"></div></section>
+</main>
+<div id="cartDrawer" class="drawer hidden"><div class="drawer-head"><h2>Your basket</h2><button class="icon-btn" id="cartClose">✕</button></div><div id="cartItems"></div><div class="cart-total"><span>Total</span><strong id="cartTotal">₹0</strong></div><button id="checkoutOpen" class="primary full">Continue to checkout</button></div>
+<div id="modalBackdrop" class="backdrop hidden"></div>
+<section id="checkoutModal" class="modal hidden"><button class="modal-close" data-close>✕</button><p class="eyebrow">ALMOST THERE</p><h2>Delivery details</h2><form id="checkoutForm"><label>Your name<input name="customerName" required minlength="2" placeholder="Enter your name"></label><label>Phone number<input name="phone" required minlength="10" placeholder="10-digit mobile number"></label><label>Delivery address<textarea name="address" required minlength="8" placeholder="House, street, area, city"></textarea></label><button class="primary full">Place order · <span id="checkoutTotal">₹0</span></button></form><p id="checkoutError" class="error"></p></section>
+<section id="trackModal" class="modal hidden"><button class="modal-close" data-close>✕</button><p class="eyebrow">ORDER UPDATES</p><h2>Track your order</h2><form id="trackForm"><label>Tracking code<input name="code" required placeholder="QB-XXXXXXXX"></label><button class="primary full">Track order</button></form><div id="trackingResult"></div></section>
+<div id="toast" class="toast"></div>
+<footer>© <span id="year"></span> QuickBasket · Made for food lovers</footer>
+<script src="/app.js"></script>
+</body></html>

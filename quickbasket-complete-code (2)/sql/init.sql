@@ -1,0 +1,2 @@
+-- Optional reference schema. The app runs the same CREATE IF NOT EXISTS statements on startup.
+-- Existing restaurant/order data is not deleted or reset.

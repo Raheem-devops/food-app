@@ -2,8 +2,16 @@ apiVersion: apps/v1
 kind: Deployment
 metadata:
   name: food-app
+  labels:
+    app: food-app
 spec:
   replicas: 2
+  revisionHistoryLimit: 5
+  strategy:
+    type: RollingUpdate
+    rollingUpdate:
+      maxSurge: 1
+      maxUnavailable: 0
   selector:
     matchLabels:
       app: food-app
@@ -12,11 +20,44 @@ spec:
       labels:
         app: food-app
     spec:
+      terminationGracePeriodSeconds: 30
+      initContainers:
+        - name: wait-for-postgres
+          image: busybox:1.36
+          command: ["sh", "-c", "until nc -z postgres 5432; do echo waiting for postgres; sleep 2; done"]
+          resources:
+            requests:
+              cpu: 10m
+              memory: 16Mi
+            limits:
+              cpu: 50m
+              memory: 32Mi
       containers:
         - name: food-app
-          image: raheemdevops/food-app:1.0.0
+          image: raheemdevops/food-app:latest
+          imagePullPolicy: Always
           ports:
-            - containerPort: 3000
+            - name: http
+              containerPort: 3000
+          envFrom:
+            - configMapRef:
+                name: food-app-config
+          env:
+            - name: DB_NAME
+              valueFrom:
+                secretKeyRef:
+                  name: food-db
+                  key: POSTGRES_DB
+            - name: DB_USER
+              valueFrom:
+                secretKeyRef:
+                  name: food-db
+                  key: POSTGRES_USER
+            - name: DB_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: food-db
+                  key: POSTGRES_PASSWORD
           resources:
             requests:
               cpu: 100m
@@ -27,5 +68,13 @@ spec:
           readinessProbe:
             httpGet:
               path: /health
-              port: 3000
+              port: http
             initialDelaySeconds: 3
+            periodSeconds: 5
+          livenessProbe:
+            httpGet:
+              path: /health
+              port: http
+            initialDelaySeconds: 10
+            periodSeconds: 10
+            failureThreshold: 3

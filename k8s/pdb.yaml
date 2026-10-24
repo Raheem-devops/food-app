@@ -1,0 +1,11 @@
+apiVersion: policy/v1
+kind: PodDisruptionBudget
+metadata:
+  name: food-app
+  labels:
+    app: food-app
+spec:
+  minAvailable: 1
+  selector:
+    matchLabels:
+      app: food-app

@@ -1,0 +1,50 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: postgres-init
+  labels:
+    app: postgres
+data:
+  init.sql: |
+    CREATE TABLE restaurants (
+      id SERIAL PRIMARY KEY,
+      name TEXT NOT NULL,
+      cuisine TEXT NOT NULL,
+      rating NUMERIC(2,1) NOT NULL DEFAULT 4.0,
+      eta_minutes INT NOT NULL DEFAULT 30
+    );
+    CREATE TABLE menu_items (
+      id SERIAL PRIMARY KEY,
+      restaurant_id INT NOT NULL REFERENCES restaurants(id),
+      name TEXT NOT NULL,
+      price NUMERIC(8,2) NOT NULL,
+      veg BOOLEAN NOT NULL DEFAULT TRUE
+    );
+    CREATE TABLE orders (
+      id SERIAL PRIMARY KEY,
+      customer_name TEXT NOT NULL,
+      restaurant_id INT NOT NULL REFERENCES restaurants(id),
+      total NUMERIC(10,2) NOT NULL,
+      status TEXT NOT NULL DEFAULT 'PLACED',
+      created_at TIMESTAMPTZ NOT NULL DEFAULT now()
+    );
+    CREATE TABLE order_items (
+      id SERIAL PRIMARY KEY,
+      order_id INT NOT NULL REFERENCES orders(id),
+      menu_item_id INT NOT NULL REFERENCES menu_items(id),
+      quantity INT NOT NULL CHECK (quantity > 0)
+    );
+    INSERT INTO restaurants (name, cuisine, rating, eta_minutes) VALUES
+      ('Spice Villa', 'Indian', 4.5, 30),
+      ('Pizza Corner', 'Italian', 4.2, 25),
+      ('Wok Express', 'Chinese', 4.0, 35);
+    INSERT INTO menu_items (restaurant_id, name, price, veg) VALUES
+      (1, 'Paneer Butter Masala', 220, TRUE),
+      (1, 'Chicken Biryani', 280, FALSE),
+      (1, 'Garlic Naan', 50, TRUE),
+      (2, 'Margherita Pizza', 249, TRUE),
+      (2, 'Pepperoni Pizza', 329, FALSE),
+      (2, 'Garlic Bread', 129, TRUE),
+      (3, 'Veg Hakka Noodles', 180, TRUE),
+      (3, 'Chicken Fried Rice', 220, FALSE),
+      (3, 'Veg Manchurian', 190, TRUE);
